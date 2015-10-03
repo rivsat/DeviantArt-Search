@@ -16,4 +16,7 @@
 - (void)parseForQuery:(NSString *)query;
 - (NSString *) getTitle:(NSInteger) index;
 - (NSString *) getSubTitle:(NSInteger) index;
+- (BOOL)hasImageAtIndexPath:(NSInteger) index;
+- (NSURL *) getImageUrl:(NSInteger) index;
+
 @end

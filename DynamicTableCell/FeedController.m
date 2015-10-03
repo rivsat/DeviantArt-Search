@@ -97,4 +97,27 @@
     return subtitle;
 }
 
+- (BOOL) hasImageAtIndexPath:(NSInteger)index {
+    RSSItem *item = self.feedItems[index];
+    RSSMediaThumbnail *mediaThumbnail = [item.mediaThumbnails firstObject];
+    return mediaThumbnail.url != nil;
+}
+
+- (NSURL *) getImageUrl:(NSInteger) index {
+    RSSItem *item = self.feedItems[index];
+    RSSMediaThumbnail *mediaThumbnail = [item.mediaThumbnails firstObject];
+    
+    // mediaThumbnails are generally ordered by size,
+    // so get the second mediaThumbnail, which is a
+    // "medium" sized image
+    
+    if (item.mediaThumbnails.count >= 2) {
+        mediaThumbnail = item.mediaThumbnails[1];
+    } else {
+        mediaThumbnail = [item.mediaThumbnails firstObject];
+    }
+    
+    return mediaThumbnail.url;
+}
+
 @end

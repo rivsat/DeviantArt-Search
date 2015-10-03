@@ -9,6 +9,8 @@
 #import "FeedView.h"
 #import "FeedController.h"
 #import "FeedCell.h"
+#import "CustomImageCell.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface FeedView ()
 
@@ -72,9 +74,33 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [self feedCellAtIndexPath:indexPath];
+    if ([_feedController hasImageAtIndexPath:indexPath.row]) {
+        return [self galleryCellAtIndexPath:indexPath];
+    } else {
+        return [self feedCellAtIndexPath:indexPath];
+    }
 }
 
+#pragma mark - gallery cell
+- (CustomImageCell *)galleryCellAtIndexPath:(NSIndexPath *)indexPath {
+    CustomImageCell *cell = [self.resultsTableView dequeueReusableCellWithIdentifier:kImageCellIdentifier forIndexPath:indexPath];
+    [self configureImageCell:cell atIndexPath:indexPath];
+    return cell;
+}
+
+- (void)configureImageCell:(CustomImageCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+    [self setTitleForCell:cell atIndexPath:indexPath];
+    [self setSubtitleForCell:cell atIndexPath:indexPath];
+    [self setImageForCell:(id)cell atIndexPath:indexPath];
+}
+
+- (void)setImageForCell:(CustomImageCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+    NSURL *imageUrl = [_feedController getImageUrl:indexPath.row];
+    [cell.customImageView setImage:nil];
+    [cell.customImageView setImageWithURL:imageUrl];
+}
+
+#pragma mark - text-only cell
 - (FeedCell *)feedCellAtIndexPath:(NSIndexPath *)indexPath {
     FeedCell *cell = [self.resultsTableView dequeueReusableCellWithIdentifier:kFeedCellIdentifier forIndexPath:indexPath];
     [self configureFeedCell:cell atIndexPath:indexPath];
@@ -103,7 +129,7 @@
     [cell.subtitleLabel setText:subtitle];
 }
 
-#pragma mark - UITableViewDelegate
+#pragma mark - UITableView Delegate methods
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return [self heightForFeedCellAtIndexPath:indexPath];
@@ -130,8 +156,27 @@
     CGSize size = [sizingCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     return size.height + 1.0f; // Add 1.0f for the cell separator height
 }
+/*
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([self isLandscapeOrientation]) {
+        if ([_feedController hasImageAtIndexPath:indexPath.row]) {
+            return 140.0f;
+        } else {
+            return 120.0f;
+        }
+    } else {
+        if ([_feedController hasImageAtIndexPath:indexPath.row]) {
+            return 235.0f;
+        } else {
+            return 155.0f;
+        }
+    }
+}
 
-
+- (BOOL)isLandscapeOrientation {
+    return UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
+}
+*/
 #pragma mark - Refresh
 // called when keyboard search button
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
@@ -160,6 +205,7 @@
                                                            delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil, nil];
+        [alertView show];
 
     }
 }

@@ -11,5 +11,5 @@
 
 static NSString * const kDeviantArtBaseURLString = @"http://backend.deviantart.com/rss.xml";
 static NSString * const kFeedCellIdentifier = @"FeedCell";
-
+static NSString * const kImageCellIdentifier = @"ImageCell";
 #endif
